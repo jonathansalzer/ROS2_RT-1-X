@@ -23,7 +23,14 @@ class RT1Policy:
   def __init__(
       self,
       # checkpoint_path="/home/jonathan/Thesis/ROS2_RT-1-X/ros2_ws/src/ros2_rt_1_x/ros2_rt_1_x/checkpoints/rt_1_x_jax/b321733791_75882326_000900000",
-      checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/custom_rt1x_checkpoint_epoch12",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch1_loss0.3779665529727936",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch5_loss0.08937545120716095",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch20_loss0.0024124912451952696",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch20_loss0.3431842625141144",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch60_loss0.02726834826171398",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch10_loss0.013526788912713528", # even touching the banana sometimes
+      checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/train_1720533687_lr_1e-06_eps_1e-07/custom_rt1x_checkpoint_epoch35_loss0.4211953282356262",
+      
       model=rt1.RT1(),
       variables=None,
       seqlen=15,
@@ -253,9 +260,10 @@ class RT1Inferer:
 
     return self.policy.action(observation)
   
-  def run_umi_mock_inference(self, img, step_index):
+  def run_umi_mock_inference(self, img, lang_instruction, step_index):
+    img.save(f'./data/tmp_mock_inference.png')
     image = preprocess_image(img)
-    emb = self.embed(["Place the can to the left of the pot."])[0]
+    emb = self.embed([lang_instruction])[0]
 
     if len(self.img_queue) == 0:
       self.img_queue.extend([jnp.zeros((300,300,3)) for j in range(0,15)])

@@ -17,6 +17,7 @@ import ros2_rt_1_x.models.rt1_inference as jax_models
 import ros2_rt_1_x.camera as camera
 import ros2_rt_1_x.tf_models.tf_rt1_inference as tf_models
 import ros2_rt_1_x.output_logging as output_log
+import ros2_rt_1_x.umi_rescale as umi_rescale
 
 
 class RtTargetPose(Node):
@@ -32,7 +33,7 @@ class RtTargetPose(Node):
 
         self.natural_language_instruction = "Pick up the yellow banana."
         self.inference_interval = 3.0
-        self.inference_steps = 38
+        self.inference_steps = 25
 
         # self.rt1_inferer = tf_models.RT1TensorflowInferer(self.natural_language_instruction)
         self.rt1_inferer = jax_models.RT1Inferer(self.natural_language_instruction)
@@ -79,7 +80,9 @@ class RtTargetPose(Node):
             # image = self.camera.get_picture()
             # act = self.rt1_jax_inferer.run_inference(image,steps)
 
+            act = umi_rescale.scale_back_to_umi(act)
             self.publish_target_pose_deltas(act)
+
             actions.append(act)
 
             print(hash(str(act)))
@@ -164,7 +167,7 @@ class RtTargetPose(Node):
 
         grip_msg = Float32()
         grip_msg.data = self.cur_grip
-        print('GRIPPER CLOSEDNESS: ', self.cur_grip)
+        print('Y: ', self.cur_y)
 
         self.pose_publisher.publish(pose_msg)
         self.grip_publisher.publish(grip_msg)

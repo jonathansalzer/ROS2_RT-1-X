@@ -132,16 +132,16 @@ class PoseControl(Node):
                 y = joy.get_axis(1)
                 if abs(x) > 0.05 or abs(y) > 0.05:
                     move = True
-                    self.current_pose.position.x += x * -0.02
-                    self.current_pose.position.y += y * 0.02
+                    self.current_pose.position.x += x * -0.01
+                    self.current_pose.position.y += y * 0.01
 
                 # move z
                 if joy.get_button(4) == 1:
                     move = True
-                    self.current_pose.position.z += 0.02
+                    self.current_pose.position.z += 0.01
                 elif joy.get_button(5) == 1:
                     move = True
-                    self.current_pose.position.z -= 0.02
+                    self.current_pose.position.z -= 0.01
 
                 # move pitch
                 pitch = joy.get_axis(2)
@@ -180,12 +180,12 @@ class PoseControl(Node):
                     # self.get_logger().info(f'Published target grip: {self.current_grip}')
                     move = False
 
-                # every second, log the current pose
-                if (self.episode_logger.episode_started):
+                # every 3 seconds, log the current pose
+                if (self.episode_logger.episode_started and time.time() - self.episode_logger.last_log_time >= 3.0):
                     self.episode_logger.log(self.current_pose, self.current_grip)
                     self.episode_logger.last_log_time = time.time()
 
-                time.sleep(0.3)
+                time.sleep(0.1)
 
 
 

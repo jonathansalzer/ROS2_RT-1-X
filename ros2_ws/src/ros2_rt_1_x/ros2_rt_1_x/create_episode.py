@@ -63,7 +63,7 @@ class EpisodeLogger:
         yaw = new_pose.orientation.x - self.current_pose.orientation.x
         pitch = new_pose.orientation.y - self.current_pose.orientation.y
         roll = new_pose.orientation.z - self.current_pose.orientation.z
-        grip = new_grip.data - self.current_grip.data
+        grip = new_grip.data
         terminate_episode = int(terminate)
 
         print(f'Current pose: x={self.current_pose.position.x}, y={self.current_pose.position.y}, z={self.current_pose.position.z}, yaw={self.current_pose.orientation.x}, pitch={self.current_pose.orientation.y}, roll={self.current_pose.orientation.z}, grip={self.current_grip.data}')
