@@ -37,9 +37,53 @@ class RtMockInferer(Node):
             dataset_builder = tfds.builder_from_directory('/home/jonathan/tensorflow_datasets/episodes/1.0.0')
         else:
             dataset_builder = tfds.builder_from_directory(builder_dir='gs://gresearch/robotics/bridge/0.1.0/')
-        dataset = dataset_builder.as_dataset(split='train[:10]')
+        dataset = dataset_builder.as_dataset(split='train')
         iter_dataset = iter(dataset)
+
+        episode_count = 0
+        for episode in iter_dataset:
+            episode_count += 1
+        print(f'Episode count: {episode_count}')
+
+        iter_dataset = iter(dataset)
+
         first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+        first_episode = next(iter_dataset)
+
+
         episode_steps = first_episode['steps']
         step_iterator = iter(episode_steps)
         return step_iterator
@@ -54,18 +98,28 @@ class RtMockInferer(Node):
 
             act = self.rt1_inferer.run_umi_mock_inference(image, self.natural_language_instruction, index)
 
+            print("OG ACTION: ", act)
+
+            # actions.append(act)
+
             if self.dataset == "umi":
-                act = umi_rescale.scale_back_to_umi(act)
+                act = umi_rescale.rt1_outputs_to_umi_states(act)
             if self.dataset == "bridge":
                 act = umi_rescale.scale_rt1_to_bridge(act)
 
             actions.append(act)
             print(act)
 
+            print("DIFFERENCE:")
+            print(act['world_vector'][1])
+            print(step['action']['world_vector'][1])
+            print(act['world_vector'][1] - step['action']['world_vector'][1])
+
             # transform ground truth action to match the output of the model, so it can be plotted
 
             if self.dataset == "umi":
                 step['action']['gripper_closedness_action'] = [step['action']['gripper_closedness_action']]
+                # step['action']['world_vector'] = [i * 2 - 0.45 for i in step['action']['world_vector']]
 
             if self.dataset == "bridge":
                 if step['action']['open_gripper'] == True:
@@ -83,94 +137,6 @@ class RtMockInferer(Node):
             print(f'Inference step {index+1}')
 
         output_log.draw_compare_model_output(actions, ground_truth_actions, 'umi_mock_inference')
-
-
-    def scale_back_to_umi(self, action):
-        # in the finetuning code, we scale our actions to the UMI range,
-        # which is 2;2 for coordinates and pi/2 for rotations. We need
-        # to do the opposite of that here, so we get back to UMI range.
-        # The world vector as existed in the dataset on disk ranges from -0.01 to 0.01
-
-        scaled_action = copy.deepcopy(action)
-        
-        # We scale by 200.0 so that the action better spans the limit of the
-        # world_vector action, from -2.0 to 2.0.
-        scaled_action['world_vector'] = [i / 6.0 for i in action['world_vector']]
-
-        # Similarly, the rotation_delta in the dataset on disk ranges from -2.0 to
-        # 2.0
-        # We scale by 0.79 so that the rotation_delta almost spans the limit of
-        # rotation_delta, from -pi/2 to pi/2.
-        scaled_action['rotation_delta'] = [i / 0.025 for i in action['rotation_delta']]
-
-        # scale grip from space 0.02 to 0.08, to -1 to 1, with 0.02 being 1, and 0.08 being -1
-        scaled_action['gripper_closedness_action'] = (
-            self.rescale_value(
-                value=action['gripper_closedness_action'],
-                value_low=1.0,
-                value_high=-1.0,
-                output_low=0.02,
-                output_high=0.08,
-            )
-        )
-
-        # scaled_action['world_vector'][0] = self.rescale_value(
-        #     value=action['world_vector'][0],
-        #     output_low=-0.05,
-        #     output_high=0.05,
-        #     value_low=-1.75,
-        #     value_high=1.75,
-        # )
-
-        # scaled_action['world_vector'][1] = self.rescale_value(
-        #     value=action['world_vector'][1],
-        #     output_low=-0.05,
-        #     output_high=0.05,
-        #     value_low=-1.75,
-        #     value_high=1.75,
-        # )
-
-        # scaled_action['world_vector'][2] = self.rescale_value(
-        #     value=action['world_vector'][2],
-        #     output_low=-0.05,
-        #     output_high=0.05,
-        #     value_low=-1.75,
-        #     value_high=1.75,
-        # )
-
-        # scaled_action['rotation_delta'][0] = self.rescale_value(
-        #     value=action['rotation_delta'][0],
-        #     output_low=-0.25,
-        #     output_high=0.25,
-        #     value_low=-1.4,
-        #     value_high=1.4,
-        # )
-
-        # scaled_action['rotation_delta'][1] = self.rescale_value(
-        #     value=action['rotation_delta'][1],
-        #     output_low=-0.25,
-        #     output_high=0.25,
-        #     value_low=-1.4,
-        #     value_high=1.4,
-        # )
-
-        # scaled_action['rotation_delta'][2] = self.rescale_value(
-        #     value=action['rotation_delta'][2],
-        #     output_low=-0.25,
-        #     output_high=0.25,
-        #     value_low=-1.4,
-        #     value_high=1.4,
-        # )
-    
-
-
-        return scaled_action
-        
-    def rescale_value(self, value, value_low, value_high, output_low, output_high):
-        """Rescale value from [value_low, value_high] to [output_low, output_high]."""
-        return (value - value_low) / (value_high - value_low) * (
-            output_high - output_low
-        ) + output_low
 
 
 

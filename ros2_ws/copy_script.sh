@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set the number of copies you want to create
-num_copies=30
-num_train=25
+num_copies=40
+num_train=10
 
 # Set the base name of the source file
 src_file="./episodes/test_epi.npy"

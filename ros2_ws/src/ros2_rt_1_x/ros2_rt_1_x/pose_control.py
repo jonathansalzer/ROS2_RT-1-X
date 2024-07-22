@@ -67,6 +67,8 @@ class PoseControl(Node):
         self.pose_publisher.publish(self.current_pose)
         self.grip_publisher.publish(self.current_grip)
 
+        episode_count = 0
+
         done = False
         while not done:
             for event in pygame.event.get():
@@ -110,14 +112,28 @@ class PoseControl(Node):
                 # start episode
                 if joy.get_button(9) == 1:
                     self.episode_logger.episode_started = True
+                    self.episode_logger.log(self.current_pose, self.current_grip)
                     print('Episode started.')
 
                 # terminate episode
                 if joy.get_button(8) == 1:
-                    self.episode_logger.log(self.current_pose, self.current_grip, terminate=True)
-                    self.episode_logger.stop_and_save(f'epi_{int(time.time())}')
-                    print('Episode saved.')
-                    break
+                    if(self.episode_logger.episode_started):
+                        self.episode_logger.log(self.current_pose, self.current_grip, terminate=True)
+                        self.episode_logger.stop_and_save(f'epi_{int(time.time())}')
+                        print('Episode saved.')
+                        self.current_pose.position.x = 0.0
+                        self.current_pose.position.y = 0.5
+                        self.current_pose.position.z = 0.5
+                        self.current_pose.orientation.x = 90.0
+                        self.current_pose.orientation.y = 0.0
+                        self.current_pose.orientation.z = 0.0
+                        self.current_pose.orientation.w = 1.0
+                        self.current_grip.data = 0.02
+                        move = True
+
+                        episode_count += 1
+                        print(f'Saved Episode {episode_count}')
+                        # break
 
                 # move grip
                 if joy.get_button(6) == 1:

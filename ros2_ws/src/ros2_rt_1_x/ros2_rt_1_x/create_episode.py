@@ -14,6 +14,9 @@ class EpisodeLogger:
     def __init__(self, initial_pose: Pose, initial_grip: Float32):
         tf.config.experimental.set_visible_devices([], "GPU")
 
+        self.initpose = copy.deepcopy(initial_pose)
+        self.initgrip = copy.deepcopy(initial_grip)
+
         self.episode = []
         self.camera = camera.Camera()
         self.current_pose = copy.deepcopy(initial_pose)
@@ -25,17 +28,22 @@ class EpisodeLogger:
         self.natural_language_instruction = 'Pick up the yellow banana.'
 
     def log(self, new_pose, new_grip, terminate=False):
+        act = self._get_action(new_pose, new_grip, terminate)
+
+        self.current_pose = copy.deepcopy(new_pose)
+        self.current_grip = copy.deepcopy(new_grip)
+
         self.episode.append({
             'image': self._take_picture(),
-            'action': self._get_action(new_pose, new_grip, terminate),
+            'action': act,
             'language_instruction': self.natural_language_instruction,
             'state': self._get_state(terminate)
         })
+        
         self.episode_length += 1
         print(f'Logged action {self.episode_length}.')
         self.last_log_time = time.time()
-        self.current_pose = copy.deepcopy(new_pose)
-        self.current_grip = copy.deepcopy(new_grip)
+        
 
     def stop_and_save(self, filename):
         self.episode_started = False
@@ -46,6 +54,10 @@ class EpisodeLogger:
 
     def reset(self):
         self.episode = []
+        self.episode_length = 0
+        self.current_pose = self.initpose
+        self.current_grip = self.initgrip
+
 
     def _take_picture(self):
         image = Image.fromarray(cv2.cvtColor(self.camera.get_picture(), cv2.COLOR_BGRA2RGB)).convert('RGB')

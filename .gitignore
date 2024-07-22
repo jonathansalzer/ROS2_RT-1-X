@@ -4,4 +4,6 @@ install/
 log/
 checkpoints/
 ros2_ws/data/*
-!ros2_ws/data/plots/
+ros2_ws/data/plots/
+ros2_ws/episodes/
+ros2_ws/corrected_episodes/

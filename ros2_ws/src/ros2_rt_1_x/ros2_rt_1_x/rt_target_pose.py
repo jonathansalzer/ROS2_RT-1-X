@@ -15,7 +15,7 @@ import tensorflow as tf
 
 import ros2_rt_1_x.models.rt1_inference as jax_models
 import ros2_rt_1_x.camera as camera
-import ros2_rt_1_x.tf_models.tf_rt1_inference as tf_models
+# import ros2_rt_1_x.tf_models.tf_rt1_inference as tf_models
 import ros2_rt_1_x.output_logging as output_log
 import ros2_rt_1_x.umi_rescale as umi_rescale
 
@@ -33,7 +33,7 @@ class RtTargetPose(Node):
 
         self.natural_language_instruction = "Pick up the yellow banana."
         self.inference_interval = 3.0
-        self.inference_steps = 25
+        self.inference_steps = 2500
 
         # self.rt1_inferer = tf_models.RT1TensorflowInferer(self.natural_language_instruction)
         self.rt1_inferer = jax_models.RT1Inferer(self.natural_language_instruction)
@@ -80,10 +80,13 @@ class RtTargetPose(Node):
             # image = self.camera.get_picture()
             # act = self.rt1_jax_inferer.run_inference(image,steps)
 
-            act = umi_rescale.scale_back_to_umi(act)
-            self.publish_target_pose_deltas(act)
-
             actions.append(act)
+
+            # act = umi_rescale.scale_back_to_umi(act)
+            act = umi_rescale.rt1_outputs_to_umi_states(act)
+            self.publish_target_pose(act)
+            # self.publish_target_pose(act)
+
 
             print(hash(str(act)))
 
@@ -101,20 +104,27 @@ class RtTargetPose(Node):
 
         gripper_closedness_action = action["gripper_closedness_action"]
         rotation_delta = action["rotation_delta"]
-        terminate_episode = action["terminate_episode"]
         world_vector = action["world_vector"]
 
         pos_x = float(world_vector[0])
         pos_y = float(world_vector[1])
         pos_z = float(world_vector[2])
-        roll = float(rotation_delta[0])
+        yaw = float(rotation_delta[0])
         pitch = float(rotation_delta[1])
-        yaw = float(rotation_delta[2])
+        roll = float(rotation_delta[2])
         grip = float(gripper_closedness_action[0])
+
+        # pos_x = min(max(pos_x, -0.5), 0.5)
+        # pos_y = min(max(pos_y, 0.2), 0.7)
+        # pos_z = min(max(pos_z, 0.2), 0.6)
+        # roll = min(max(roll, 0.0), 90.0)
+        # pitch = min(max(pitch, 0.0), 90.0)
+        # yaw = min(max(yaw, -10.0), 170.0)
+        # grip = min(max(grip, 0.02), 0.08)
 
         # print(f'Publishing target pose: {pos_x}, {pos_y}, {pos_z}, {roll}, {pitch}, {yaw}, {grip}')
         self.get_logger().info(f'Publishing target pose and grip...')
-        # self.get_logger().info(f'pos_x: {pos_x}, pos_y: {pos_y}, pos_z: {pos_z}, roll: {roll}, pitch: {pitch}, yaw: {yaw}, grip: {grip}')
+        self.get_logger().info(f'pos_x: {pos_x}, pos_y: {pos_y}, pos_z: {pos_z}, roll: {roll}, pitch: {pitch}, yaw: {yaw}, grip: {grip}')
 
         pose_msg = Pose()
         pose_msg.position.x = pos_x
