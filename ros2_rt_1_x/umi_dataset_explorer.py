@@ -16,32 +16,36 @@ def main():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
 
-        print(f"Correcting episode {filename}...")
+        print(f"Analyzing episode {filename}...")
 
         data = np.load(f"/home/jonathan/Thesis/ROS2_RT-1-X/ros2_ws/episodes/{filename}", allow_pickle=True)
 
-        corrected_data = []
+        highest_x = 0
+        lowest_x = 0
+        highest_y = 0
+        highest_z = 0
 
         for index, step in enumerate(data):
-            if index == len(data) - 1:
-                corrected_data.append({
-                    'image': step['image'],
-                    'action': step['action'],
-                    'language_instruction': step['language_instruction'],
-                    'state': calculate_final_state(data[index - 1]['state'], step['action'])
-                })
-            else:
-                corrected_data.append({
-                    'image': step['image'],
-                    'action': step['action'],
-                    'language_instruction': step['language_instruction'],
-                    'state': data[index + 1]['state']
-                })
+            world_vec = step['state']
+            x = world_vec[0]
+            y = world_vec[1]
+            z = world_vec[2]
 
-        # corrected_data[0]['state'] = STATE_0
-        # corrected_data[0]['action'] = ACTION_0
+            if x > highest_x:
+                highest_x = x
+            if x < lowest_x:
+                lowest_x = x
+            if y > highest_y:
+                highest_y = y
+            if z > highest_z:
+                highest_z = z
 
-        np.save(f"/home/jonathan/Thesis/ROS2_RT-1-X/ros2_ws/corrected_episodes/{filename}", corrected_data)
+        print(f"Highest x: {highest_x}")
+        print(f"Lowest x: {lowest_x}")
+        if highest_x > 0.4 or lowest_x < -0.4:
+            print(f" ================> Episode {filename} has x values out of range.")
+        # print(f"Highest y: {highest_y}")
+        # print(f"Highest z: {highest_z}")
 
 def calculate_final_state(prev_state, action):
     return [

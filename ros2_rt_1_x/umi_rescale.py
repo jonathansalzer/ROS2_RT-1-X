@@ -98,6 +98,43 @@ def umi_actions_to_rt1_inputs(umi_actions):
 
     return rt1_inputs
 
+def rt1_outputs_to_umi_states(rt1_outputs):
+    pos = rt1_outputs["world_vector"]
+    rot = rt1_outputs["rotation_delta"]
+    grip = rt1_outputs["gripper_closedness_action"]
+
+    pos_x = float(pos[0])
+    pos_y = float(pos[1])
+    pos_z = float(pos[2])
+    yaw = float(rot[0])
+    pitch = float(rot[1])
+    roll = float(rot[2])
+    gripper_closedness = float(grip[0])
+    
+    umi_pos_x = _rescale_dimension(pos_x, -1.75, 1.75, X_MIN, X_MAX)
+    umi_pos_y = _rescale_dimension(pos_y, -1.75, 1.75, Y_MIN, Y_MAX)
+    umi_pos_z = _rescale_dimension(pos_z, -1.75, 1.75, Z_MIN, Z_MAX)
+
+    # umi_pos_x = pos_x #/ 1.984
+    # umi_pos_y = pos_y #/ 1.989
+    # umi_pos_z = pos_z #/ 1.989
+
+    umi_yaw = _rescale_dimension(yaw, -1.4, 1.4, O_X_MIN, O_X_MAX)
+    umi_pitch = _rescale_dimension(pitch, -1.4, 1.4, O_Y_MIN, O_Y_MAX)
+    umi_roll = _rescale_dimension(roll, -1.4, 1.4, O_Z_MIN, O_Z_MAX)
+    umi_gripper_closedness = _rescale_dimension(gripper_closedness, RT1_GRIP_MIN, RT1_GRIP_MAX, GRIP_MIN, GRIP_MAX)
+
+    print("Y OG: ", pos_y)
+    print("Y UMI: ", umi_pos_y)
+
+    umi_states = copy.deepcopy(rt1_outputs)
+
+    umi_states["world_vector"] = [umi_pos_x, umi_pos_y, umi_pos_z]
+    umi_states["rotation_delta"] = [umi_yaw, umi_pitch, umi_roll]
+    umi_states["gripper_closedness_action"] = [umi_gripper_closedness]
+
+    return umi_states
+
 def _rescale_dimension(
     value: float,
     low: float,
@@ -117,10 +154,10 @@ def _rescale_dimension(
     ) + post_scaling_min
     if val < post_scaling_min:
         print("VALUE BELOW MIN")
-        return post_scaling_min
+        # return post_scaling_min
     if val > post_scaling_max:
         print("VALUE ABOVE MAX")
-        return post_scaling_max
+        # return post_scaling_max
     return val
 
 def scale_back_to_umi(action):

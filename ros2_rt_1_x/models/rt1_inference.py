@@ -29,7 +29,9 @@ class RT1Policy:
       # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch20_loss0.3431842625141144",
       # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch60_loss0.02726834826171398",
       # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch10_loss0.013526788912713528", # even touching the banana sometimes
-      checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/train_1720533687_lr_1e-06_eps_1e-07/custom_rt1x_checkpoint_epoch35_loss0.4211953282356262",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/train_1720540770_lr_0.0001_eps_1e-07/custom_rt1x_checkpoint_epoch4_loss0.16439007222652435",
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload_success/checkpoint_970008", # good
+      checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_908002",
       
       model=rt1.RT1(),
       variables=None,
