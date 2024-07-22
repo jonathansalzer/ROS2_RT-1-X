@@ -115,9 +115,9 @@ def rt1_outputs_to_umi_states(rt1_outputs):
     umi_pos_y = _rescale_dimension(pos_y, -1.75, 1.75, Y_MIN, Y_MAX)
     umi_pos_z = _rescale_dimension(pos_z, -1.75, 1.75, Z_MIN, Z_MAX)
 
-    # umi_pos_x = pos_x #/ 1.984
-    # umi_pos_y = pos_y #/ 1.989
-    # umi_pos_z = pos_z #/ 1.989
+    # umi_pos_x = pos_x / 1.984
+    # umi_pos_y = pos_y / 1.989
+    # umi_pos_z = pos_z / 1.989
 
     umi_yaw = _rescale_dimension(yaw, -1.4, 1.4, O_X_MIN, O_X_MAX)
     umi_pitch = _rescale_dimension(pitch, -1.4, 1.4, O_Y_MIN, O_Y_MAX)
