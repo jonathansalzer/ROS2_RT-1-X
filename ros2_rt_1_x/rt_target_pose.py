@@ -89,6 +89,9 @@ class RtTargetPose(Node):
 
 
             print(hash(str(act)))
+            terminate = act["terminate_episode"][0]
+            if terminate:
+                print(f'TERMINATING EPISODE AFTER STEP {steps}.')
 
             time.sleep(self.inference_interval)
             steps += 1
@@ -105,6 +108,7 @@ class RtTargetPose(Node):
         gripper_closedness_action = action["gripper_closedness_action"]
         rotation_delta = action["rotation_delta"]
         world_vector = action["world_vector"]
+        terminate_episode = action["terminate_episode"]
 
         pos_x = float(world_vector[0])
         pos_y = float(world_vector[1])
@@ -123,8 +127,8 @@ class RtTargetPose(Node):
         # grip = min(max(grip, 0.02), 0.08)
 
         # print(f'Publishing target pose: {pos_x}, {pos_y}, {pos_z}, {roll}, {pitch}, {yaw}, {grip}')
-        self.get_logger().info(f'Publishing target pose and grip...')
-        self.get_logger().info(f'pos_x: {pos_x}, pos_y: {pos_y}, pos_z: {pos_z}, roll: {roll}, pitch: {pitch}, yaw: {yaw}, grip: {grip}')
+        # self.get_logger().info(f'Publishing target pose and grip...')
+        # self.get_logger().info(f'pos_x: {pos_x}, pos_y: {pos_y}, pos_z: {pos_z}, roll: {roll}, pitch: {pitch}, yaw: {yaw}, grip: {grip}')
 
         pose_msg = Pose()
         pose_msg.position.x = pos_x
@@ -164,7 +168,7 @@ class RtTargetPose(Node):
         self.cur_yaw = min(max(self.cur_yaw, -10.0), 170.0)
         self.cur_grip = min(max(self.cur_grip, 0.02), 0.08)
 
-        self.get_logger().info(f'Publishing target pose and grip...')
+        # self.get_logger().info(f'Publishing target pose and grip...')
 
         pose_msg = Pose()
         pose_msg.position.x = self.cur_x

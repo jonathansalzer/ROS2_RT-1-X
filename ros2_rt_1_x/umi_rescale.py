@@ -124,9 +124,6 @@ def rt1_outputs_to_umi_states(rt1_outputs):
     umi_roll = _rescale_dimension(roll, -1.4, 1.4, O_Z_MIN, O_Z_MAX)
     umi_gripper_closedness = _rescale_dimension(gripper_closedness, RT1_GRIP_MIN, RT1_GRIP_MAX, GRIP_MIN, GRIP_MAX)
 
-    print("Y OG: ", pos_y)
-    print("Y UMI: ", umi_pos_y)
-
     umi_states = copy.deepcopy(rt1_outputs)
 
     umi_states["world_vector"] = [umi_pos_x, umi_pos_y, umi_pos_z]
@@ -143,21 +140,21 @@ def _rescale_dimension(
     post_scaling_max: float = 1.0,
 ) -> float:
     """Formula taken from https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range."""
-    if value < low:
-        print(f"VALUE BELOW LOW: {value} < {low}")
-    if value > high:
-        print(f"VALUE ABOVE HIGH: {value} > {high}")
+    # if value < low:
+    #     print(f"VALUE BELOW LOW: {value} < {low}")
+    # if value > high:
+    #     print(f"VALUE ABOVE HIGH: {value} > {high}")
 
     # val = value
     val = (value - low) / (high - low) * (
         post_scaling_max - post_scaling_min
     ) + post_scaling_min
-    if val < post_scaling_min:
-        print("VALUE BELOW MIN")
-        # return post_scaling_min
-    if val > post_scaling_max:
-        print("VALUE ABOVE MAX")
-        # return post_scaling_max
+    # if val < post_scaling_min:
+    #     print("VALUE BELOW MIN")
+    #     # return post_scaling_min
+    # if val > post_scaling_max:
+    #     print("VALUE ABOVE MAX")
+    #     # return post_scaling_max
     return val
 
 def scale_back_to_umi(action):
@@ -200,7 +197,7 @@ def scale_rt1_to_bridge(action):
         post_scaling_max=0.05,
         low=-1.75,
         high=1.75,
-    )
+    )/2
 
     scaled_action['world_vector'][1] = _rescale_dimension(
         value=action['world_vector'][1],
@@ -208,7 +205,7 @@ def scale_rt1_to_bridge(action):
         post_scaling_max=0.05,
         low=-1.75,
         high=1.75,
-    )
+    )/2
 
     scaled_action['world_vector'][2] = _rescale_dimension(
         value=action['world_vector'][2],
@@ -216,7 +213,7 @@ def scale_rt1_to_bridge(action):
         post_scaling_max=0.05,
         low=-1.75,
         high=1.75,
-    )
+    )/2
 
     scaled_action['rotation_delta'][0] = _rescale_dimension(
         value=action['rotation_delta'][0],

@@ -22,16 +22,41 @@ class RT1Policy:
 
   def __init__(
       self,
-      # checkpoint_path="/home/jonathan/Thesis/ROS2_RT-1-X/ros2_ws/src/ros2_rt_1_x/ros2_rt_1_x/checkpoints/rt_1_x_jax/b321733791_75882326_000900000",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch1_loss0.3779665529727936",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch5_loss0.08937545120716095",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch20_loss0.0024124912451952696",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch20_loss0.3431842625141144",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch60_loss0.02726834826171398",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/07_05/custom_rt1x_checkpoint_epoch10_loss0.013526788912713528", # even touching the banana sometimes
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/train_1720540770_lr_0.0001_eps_1e-07/custom_rt1x_checkpoint_epoch4_loss0.16439007222652435",
-      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload_success/checkpoint_970008", # good
-      checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_908002",
+      # checkpoint_path="/home/jonathan/Thesis/ROS2_RT-1-X/ros2_ws/src/ros2_rt_1_x/ros2_rt_1_x/checkpoints/rt_1_x_jax",
+
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_955007", # interesting | middle succss | right success | left success || this is the one
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_960007", # ok | middle almost | right almost | left almost
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_940005", # good | middle almost | right success | | left almost | often stuck
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_942006", # good | middle success | right almost | left success | often stuck
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_946006", # okay | middle success | right almost | left almost | often stuck
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_931005", # good | middle success | right success | left almost
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_933005", #good | middle stuck | right almost | left stuck
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/auto_save_and_reload/checkpoint_935005", # good | middle success | right almost | left almost
+
+      # FROM SCRATCH
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_188011", # good | right close | left close
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_108007", # good | right close | left no
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_112007", # ok | right no | left no
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_114007", # close! | right far | left no 
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_118008", # good | right no | left close
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_120008", # good | right close | left far
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_122008", # close | right close | left no
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_124008", # close | right close | left close || this is the one
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_126008", # close | right no | left close
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_132008", # close | right far | left close
+
+      # checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/from_scratch_auto_save_and_reload/checkpoint_190011",
+
+      checkpoint_path="/home/jonathan/Thesis/open_x_embodiment/training_results/optimize_save_and_reload/checkpoint_955006",
+
+
+
+
+
+
+
+
+
       
       model=rt1.RT1(),
       variables=None,
@@ -269,7 +294,9 @@ class RT1Inferer:
 
     if len(self.img_queue) == 0:
       self.img_queue.extend([jnp.zeros((300,300,3)) for j in range(0,15)])
+      # self.img_queue.extend([image for j in range(0,15)])
       self.emb_queue.extend([jnp.zeros((512,)) for j in range(0,15)])
+      # self.emb_queue.extend([emb for j in range(0,15)])
 
     self.img_queue.append(image)
     self.emb_queue.append(emb)
